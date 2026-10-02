@@ -48,7 +48,7 @@ export default function LookingAtCar() {
   );
 }
 
-//Eas cooking area (måske burde du lavet et samlet document til det)
+//Plan to combine this into one file and make the visuals better
 const styles = StyleSheet.create({
   container: {
     flex: 1,
