@@ -3,6 +3,7 @@ import { Button, StyleSheet, Text, View, Image } from 'react-native';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "./types";
+import styles from './styles/styles';
 
 type CarsNavigation = NativeStackNavigationProp<RootStackParamList, "Cars">;
 
@@ -32,23 +33,3 @@ export default function CarOdered() {
   );
 }
 
-//Plan to combine this into one file and make the visuals better
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  carImage: {
-    width: 200,
-    height: 120,
-    resizeMode: 'cover',
-    marginTop: 10,
-  },
-});
