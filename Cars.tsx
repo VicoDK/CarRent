@@ -1,6 +1,5 @@
-
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, FlatList } from 'react-native';
+import { Text, View, Button, Modal, Platform } from 'react-native';
 import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 import { useNavigation } from '@react-navigation/native';
@@ -10,6 +9,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './styles/styles';
 import CarCard, { CarResponse } from './Components/CarCard';
 import CarList from './Components/CarList';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import DateSelectionModal from './Components/DatePick';
+import type { Booking } from './Booking';
 
 type CarsNavigation = NativeStackNavigationProp<
   RootStackParamList,
@@ -17,6 +19,7 @@ type CarsNavigation = NativeStackNavigationProp<
 >;
 
 export default function Cars() {
+  const [showDateModal, setShowDateModal] = useState(false);
   const navigation = useNavigation<CarsNavigation>();
   const auth = useContext(AuthContext);
 
@@ -27,6 +30,10 @@ export default function Cars() {
   const [cars, setCars] = useState<CarResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState('Car Selection');
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [datePickerFor, setDatePickerFor] = useState<'start' | 'end' | null>(null);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     async function loadCars() {
@@ -60,25 +67,61 @@ export default function Cars() {
     loadCars();
   }, []);
 
+  useEffect(() => {
+    async function loadBookings() {
+      try {
+        const storedBookings = await AsyncStorage.getItem('bookings');
+        setBookings(storedBookings ? JSON.parse(storedBookings) : []);
+      } catch (error) {
+        console.error('Error loading bookings:', error);
+      }
+    }
+
+    loadBookings();
+  }, []);
+
+  const formatDateInput = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
         {loading ? 'Loading cars...' : text}
       </Text>
 
+      <Button title="Date Select" onPress={() => setShowDateModal(true)} />
+
+      <DateSelectionModal
+        visible={showDateModal}
+        startDate={startDate}
+        endDate={endDate}
+        onClose={() => setShowDateModal(false)}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+      />
+
       <CarList
   cars={cars}
   loading={loading}
+  bookings={bookings}
+  startDate={startDate}
+  endDate={endDate}
   onCarPress={(car) => {
-    if (auth.isLoggedIn) {
-      navigation.navigate('LookingAtCar', { car });
-    } else {
+    console.log(startDate);
+    if (auth.isLoggedIn && startDate != null &&  endDate != null) {
+      navigation.navigate('LookingAtCar', { car, StartDate: startDate, EndDate: endDate });
+    } else if (startDate == null &&  endDate == null && auth.isLoggedIn)
+    {
+        setText('You need to select a date');
+    }
+    else
+    {
       setText('You need to login before selecting a car');
     }
   }}
 />
 
-{/*need a date window to open op to rent in a perid and then only show cars avaible */}
+
 
       <StatusBar style="auto" />
     </View>

@@ -51,7 +51,11 @@ const styles = StyleSheet.create({
 
   loggedOutItem: {
     backgroundColor: 'gray',
-  },
+  },formRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+},
 });
 
 export default styles;

@@ -1,14 +1,19 @@
-
 import { Text, View, Image, Pressable } from 'react-native';
 import styles from '../styles/styles';
 
 export interface CarResponse {
   id: string;
-  name: string;
+  make: string;
   model: string;
   year: number;
   pricePerDay: number;
   isAvailable: boolean;
+  bookings: BookingPeriod[];
+}
+
+interface BookingPeriod {
+  startDate: string; 
+  endDate: string;   
 }
 
 type CarCardProps = {
@@ -23,7 +28,7 @@ export default function CarCard({ item, onPress }: CarCardProps) {
       onPress={() => onPress(item)}
     >
       <Text>
-        {item.name} - {item.pricePerDay}kr/day
+        {item.make} {item.model} - {item.pricePerDay}kr/day
       </Text>
 
       <Image
